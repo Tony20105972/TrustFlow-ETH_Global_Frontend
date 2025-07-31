@@ -143,7 +143,7 @@ const Deploy = () => {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold">Generated Solidity Code</h3>
-                    <CopyButton text={result.solidity_code} />
+                    <CopyButton text={typeof result.solidity_code === 'string' ? result.solidity_code : JSON.stringify(result.solidity_code, null, 2)} />
                   </div>
                   <div className="rounded-lg overflow-hidden border">
                     <SyntaxHighlighter
@@ -151,7 +151,7 @@ const Deploy = () => {
                       style={tomorrow}
                       customStyle={{ margin: 0, fontSize: '14px' }}
                     >
-                      {result.solidity_code}
+                      {typeof result.solidity_code === 'string' ? result.solidity_code : JSON.stringify(result.solidity_code, null, 2)}
                     </SyntaxHighlighter>
                   </div>
                 </div>

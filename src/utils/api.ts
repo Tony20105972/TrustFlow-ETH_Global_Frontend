@@ -15,7 +15,7 @@ export interface DeployCodeRequest {
 }
 
 export interface DeployCodeResponse {
-  solidity_code: string;
+  solidity_code: string | object;
   rule_issues: Array<{
     type: string | object;
     description: string | object;
