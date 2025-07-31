@@ -17,14 +17,14 @@ export interface DeployCodeRequest {
 export interface DeployCodeResponse {
   solidity_code: string;
   rule_issues: Array<{
-    type: string;
-    description: string;
+    type: string | object;
+    description: string | object;
     safe: boolean;
   }>;
-  deploy_result: {
+  deploy_result?: {
     txHash: string;
     contractAddress: string;
-  };
+  } | null;
 }
 
 export interface ProposalRequest {

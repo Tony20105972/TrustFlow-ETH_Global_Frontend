@@ -160,19 +160,23 @@ const Deploy = () => {
                 <div>
                   <h3 className="font-semibold mb-3">Security Analysis</h3>
                   <div className="space-y-2">
-                    {result.rule_issues.map((issue, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
-                        {issue.safe ? (
-                          <CheckCircle className="h-5 w-5 text-success mt-0.5" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-destructive mt-0.5" />
-                        )}
-                        <div>
-                          <div className="font-medium">{issue.type}</div>
-                          <div className="text-sm text-muted-foreground">{issue.description}</div>
+                  {result.rule_issues.map((issue, index) => (
+                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
+                      {issue.safe ? (
+                        <CheckCircle className="h-5 w-5 text-success mt-0.5" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-destructive mt-0.5" />
+                      )}
+                      <div>
+                        <div className="font-medium">
+                          {typeof issue.type === 'string' ? issue.type : JSON.stringify(issue.type)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {typeof issue.description === 'string' ? issue.description : JSON.stringify(issue.description)}
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                   </div>
                 </div>
 
