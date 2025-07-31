@@ -188,7 +188,7 @@ contract Example {
             {!result && !loading && (
               <div className="text-center py-12 text-muted-foreground">
                 <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Analyze code to see security results here</p>
+                <p>⚠️ No analysis data - Analyze code to see security results here</p>
               </div>
             )}
 
@@ -196,12 +196,21 @@ contract Example {
 
             {result && (
               <div className="space-y-6">
+                {/* ZK Security Results Panel */}
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <div className="font-semibold mb-2">✅ ZK Security Analysis Results</div>
+                  <div className="text-sm space-y-1">
+                    <div><strong>Vulnerabilities:</strong> {result.analysis_result?.issues?.length || 0}</div>
+                    <div><strong>Status:</strong> {result.status}</div>
+                  </div>
+                </div>
+
                 {/* Summary */}
                 <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
                   <div>
                     <div className="font-semibold">Analysis Summary</div>
                     <div className="text-sm text-muted-foreground">
-                      {(result.analysis_result?.issues?.length || 0) === 0 ? "No issues found" : `${result.analysis_result?.issues?.length || 0} issue(s) detected`}
+                      {(result.analysis_result?.issues?.length || 0) === 0 ? "✅ No vulnerabilities found" : `${result.analysis_result?.issues?.length || 0} issue(s) detected`}
                     </div>
                   </div>
                   <div className="flex gap-2">

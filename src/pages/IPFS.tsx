@@ -69,13 +69,26 @@ const IPFS = () => {
     setResult(null);
 
     try {
-      const response = await apiService.uploadToIPFS(selectedFile);
-      setResult((response as any).data);
-      setRawResponse(JSON.stringify((response as any).data, null, 2));
+      // Use FormData for file upload
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://trust-flow-backend-ethglobal.onrender.com'}/ipfs/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setResult(data);
+      setRawResponse(JSON.stringify(data, null, 2));
       
       toast({
-        title: "Success!",
-        description: "File uploaded to IPFS successfully",
+        title: "✅ Upload Successful",
+        description: `File uploaded to IPFS: ${data.cid || data.ipfs_hash || 'Unknown CID'}`,
       });
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
@@ -195,6 +208,23 @@ const IPFS = () => {
         </Card>
 
         {/* Results Section */}
+        {!result && !loading && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Upload Results</CardTitle>
+              <CardDescription>
+                ⚠️ No upload data - Upload a file to see results here
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-muted-foreground">
+                <Upload className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p>Upload a file to see IPFS results here</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {result && (
           <Card>
             <CardHeader>
@@ -204,30 +234,50 @@ const IPFS = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-success">
-                  <CheckCircle className="h-5 w-5" />
-                  <span className="font-medium">File uploaded successfully!</span>
+              <div className="space-y-6">
+                {/* IPFS Results Panel */}
+                <div className="p-4 rounded-lg bg-success/10 border border-success/20">
+                  <div className="font-medium text-success mb-2">✅ Upload Successful</div>
+                  {(result.cid || result.ipfs_hash) ? (
+                    <div className="space-y-2">
+                      <div className="text-sm">
+                        <strong>CID:</strong> {result.cid || result.ipfs_hash}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => window.open(`https://ipfs.io/ipfs/${result.cid || result.ipfs_hash}`, '_blank')}
+                        className="w-full"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        View on IPFS Gateway
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      File uploaded but CID not available
+                    </div>
+                  )}
                 </div>
-                
-                {result.ipfs_hash && (
+
+                {(result.ipfs_hash || result.cid) && (
                   <div className="space-y-2">
-                    <div className="font-medium">IPFS Hash</div>
+                    <div className="font-medium">IPFS Hash/CID</div>
                     <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                       <code className="text-sm flex-1 break-all">
-                        {result.ipfs_hash}
+                        {result.cid || result.ipfs_hash}
                       </code>
-                      <CopyButton text={result.ipfs_hash} />
+                      <CopyButton text={result.cid || result.ipfs_hash} />
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Access your file at: 
                       <a 
-                        href={`https://ipfs.io/ipfs/${result.ipfs_hash}`}
+                        href={`https://ipfs.io/ipfs/${result.cid || result.ipfs_hash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline ml-1"
                       >
-                        https://ipfs.io/ipfs/{result.ipfs_hash}
+                        https://ipfs.io/ipfs/{result.cid || result.ipfs_hash}
                       </a>
                     </div>
                   </div>

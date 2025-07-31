@@ -38,7 +38,7 @@ const LOP = () => {
     setResult(null);
 
     try {
-      const requestData: LOPAnalyzeRequest = {
+      const requestData = {
         code: code.trim()
       };
 

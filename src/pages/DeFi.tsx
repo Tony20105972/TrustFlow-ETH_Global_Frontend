@@ -62,8 +62,8 @@ const DeFi = () => {
       setQuoteRawResponse(JSON.stringify(response.data, null, 2));
       
       toast({
-        title: "Quote Retrieved",
-        description: "Price quote fetched successfully",
+        title: "📊 Quote Retrieved",
+        description: `Price quote: ${response.data.quote_data?.toTokenAmount || 'Available'}`,
       });
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
@@ -115,8 +115,8 @@ const DeFi = () => {
       setSwapRawResponse(JSON.stringify(response.data, null, 2));
       
       toast({
-        title: "Swap Successful!",
-        description: "Token swap executed successfully",
+        title: "🔄 Swap Successful!",
+        description: "✅ Swap simulated successfully",
       });
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
@@ -265,11 +265,22 @@ const DeFi = () => {
             {!quoteResult && !swapResult && !quoteLoading && !swapLoading && (
               <div className="text-center py-12 text-muted-foreground">
                 <Coins className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Get a quote or execute a swap to see results here</p>
+                <p>⚠️ No trading data - Get a quote or execute a swap to see results here</p>
               </div>
             )}
 
             <div className="space-y-6">
+              {/* DeFi Results Panel */}
+              {(quoteResult || swapResult) && (
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <div className="font-semibold mb-2">✅ DeFi Trading Results</div>
+                  <div className="text-sm space-y-1">
+                    {quoteResult && <div><strong>Quote Data:</strong> Available</div>}
+                    {swapResult && <div><strong>Swap Data:</strong> Available</div>}
+                  </div>
+                </div>
+              )}
+
               {/* Quote Results */}
               {(quoteResult || quoteLoading) && (
                 <div>
@@ -278,27 +289,28 @@ const DeFi = () => {
                     Price Quote
                   </h3>
                   
-                  {quoteLoading && <LoadingSpinner text="Fetching price..." />}
+                  {quoteLoading && <LoadingSpinner text="📊 Getting quote..." />}
                   
                   {quoteResult && (
                     <div className="p-4 rounded-lg border bg-muted/25">
+                      <div className="text-sm font-medium mb-2">✅ Quote Retrieved Successfully</div>
                       <div className="space-y-2">
-                        {quoteResult.estimatedGas && (
+                        {quoteResult.quote_data?.toTokenAmount && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Price Quote:</span>
+                            <span className="font-mono">{quoteResult.quote_data.toTokenAmount} tokens</span>
+                          </div>
+                        )}
+                        {quoteResult.quote_data?.estimatedGas && (
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Estimated Gas:</span>
-                            <span className="font-mono">{quoteResult.estimatedGas}</span>
+                            <span className="font-mono">{quoteResult.quote_data.estimatedGas}</span>
                           </div>
                         )}
-                        {quoteResult.toTokenAmount && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Output Amount:</span>
-                            <span className="font-mono">{quoteResult.toTokenAmount}</span>
-                          </div>
-                        )}
-                        {quoteResult.protocols && (
+                        {quoteResult.quote_data && (
                           <div className="text-sm">
-                            <span className="text-muted-foreground">Protocols:</span>
-                            <span className="ml-2">{JSON.stringify(quoteResult.protocols)}</span>
+                            <span className="text-muted-foreground">Status:</span>
+                            <span className="ml-2">Quote available</span>
                           </div>
                         )}
                       </div>
@@ -315,32 +327,39 @@ const DeFi = () => {
                     Swap Execution
                   </h3>
                   
-                  {swapLoading && <LoadingSpinner text="Executing swap..." />}
+                  {swapLoading && <LoadingSpinner text="🔄 Swapping..." />}
                   
                   {swapResult && (
                     <div className="p-4 rounded-lg bg-success/10 border border-success/20">
                       <div className="flex items-center gap-2 mb-3">
                         <CheckCircle className="h-5 w-5 text-success" />
-                        <span className="font-medium text-success">Swap Executed Successfully!</span>
+                        <span className="font-medium text-success">✅ Swap simulated successfully</span>
                       </div>
                       
                       <div className="space-y-2 text-sm">
-                        {swapResult.txHash && (
+                        {swapResult.swap_data?.txHash && (
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Transaction Hash:</span>
-                            <code className="font-mono text-xs">{swapResult.txHash}</code>
+                            <a 
+                              href={`https://etherscan.io/tx/${swapResult.swap_data.txHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono text-xs hover:text-primary cursor-pointer"
+                            >
+                              {swapResult.swap_data.txHash}
+                            </a>
                           </div>
                         )}
-                        {swapResult.toTokenAmount && (
+                        {swapResult.swap_data?.toTokenAmount && (
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Received Amount:</span>
-                            <span className="font-mono">{swapResult.toTokenAmount}</span>
+                            <span className="font-mono">{swapResult.swap_data.toTokenAmount}</span>
                           </div>
                         )}
-                        {swapResult.gasUsed && (
+                        {swapResult.swap_data?.gasUsed && (
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Gas Used:</span>
-                            <span className="font-mono">{swapResult.gasUsed}</span>
+                            <span className="font-mono">{swapResult.swap_data.gasUsed}</span>
                           </div>
                         )}
                       </div>

@@ -54,10 +54,10 @@ const DAO = () => {
     setProposalResult(null);
 
     try {
-      const requestData: ProposalRequest = {
+      const requestData = {
         title: proposalTitle.trim(),
         description: proposalDescription.trim(),
-        wallet_address: proposalWallet.trim()
+        proposer_address: proposalWallet.trim()
       };
 
       const response = await apiService.createProposal(requestData);
@@ -111,10 +111,10 @@ const DAO = () => {
     setVoteResult(null);
 
     try {
-      const requestData: VoteRequest = {
+      const requestData = {
         proposal_id: voteProposalId.trim(),
-        vote: voteChoice,
-        wallet_address: voteWallet.trim()
+        vote_type: voteChoice === "for",
+        voter_address: voteWallet.trim()
       };
 
       const response = await apiService.vote(requestData);
@@ -219,15 +219,11 @@ const DAO = () => {
 
             {proposalResult && (
               <div className="p-4 rounded-lg bg-success/10 border border-success/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="h-5 w-5 text-success" />
-                  <span className="font-medium text-success">Proposal Created Successfully!</span>
+                <div className="font-medium text-success mb-2">✅ Proposal Created Successfully</div>
+                <div className="text-sm space-y-1">
+                  <div><strong>Proposal ID:</strong> {proposalResult.proposal_id || 'Generated'}</div>
+                  <div><strong>Status:</strong> {proposalResult.status || 'Active'}</div>
                 </div>
-                {proposalResult.proposal_id && (
-                  <div className="text-sm text-muted-foreground">
-                    Proposal ID: <code className="bg-muted px-1 rounded">{proposalResult.proposal_id}</code>
-                  </div>
-                )}
               </div>
             )}
           </CardContent>
@@ -297,12 +293,11 @@ const DAO = () => {
 
             {voteResult && (
               <div className="p-4 rounded-lg bg-success/10 border border-success/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <CheckCircle className="h-5 w-5 text-success" />
-                  <span className="font-medium text-success">Vote Submitted Successfully!</span>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Your vote "{voteChoice}" has been recorded
+                <div className="font-medium text-success mb-2">✅ Vote Submitted Successfully</div>
+                <div className="text-sm space-y-1">
+                  <div><strong>Proposal ID:</strong> {voteResult.proposal_id || voteProposalId}</div>
+                  <div><strong>Vote:</strong> {voteChoice}</div>
+                  <div><strong>Status:</strong> {voteResult.status || 'Recorded'}</div>
                 </div>
               </div>
             )}

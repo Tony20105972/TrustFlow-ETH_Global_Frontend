@@ -80,10 +80,18 @@ const Deploy = () => {
       setResult(response.data);
       setRawResponse(JSON.stringify(response.data, null, 2));
       
-      toast({
-        title: "Success!",
-        description: "Contract deployment initiated successfully",
-      });
+      // Check if deployment was successful
+      if (response.data.deployment?.deploy_result) {
+        toast({
+          title: "🎉 Deployment Successful",
+          description: `Contract deployed at ${response.data.deployment.deploy_result.contractAddress}`,
+        });
+      } else {
+        toast({
+          title: "⚠️ Deployment Compiled",
+          description: "Contract compiled but not deployed (check for security issues)",
+        });
+      }
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
       
@@ -200,94 +208,116 @@ const Deploy = () => {
             {!result && !loading && (
               <div className="text-center py-12 text-muted-foreground">
                 <Rocket className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Deploy a contract to see results here</p>
+                <p>⚠️ No deployment data - Deploy a contract to see results here</p>
               </div>
             )}
 
-            {loading && <LoadingSpinner text="Generating contract..." />}
+            {loading && <LoadingSpinner text="🚀 Deploying contract..." />}
 
-            {result && result.deployment && (
+            {result && (
               <div className="space-y-6">
-                {/* Solidity Code */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold">Solidity Code</h3>
-                    <CopyButton text={typeof result.deployment.solidity_code === 'string' ? result.deployment.solidity_code : JSON.stringify(result.deployment.solidity_code, null, 2)} />
-                  </div>
-                  <div className="rounded-lg overflow-hidden border">
-                    <SyntaxHighlighter
-                      language="solidity"
-                      style={tomorrow}
-                      customStyle={{ margin: 0, fontSize: '14px' }}
-                    >
-                      {typeof result.deployment.solidity_code === 'string' ? result.deployment.solidity_code : JSON.stringify(result.deployment.solidity_code, null, 2)}
-                    </SyntaxHighlighter>
-                  </div>
-                </div>
-
-                {/* Rule Issues */}
-                <div>
-                  <h3 className="font-semibold mb-3">Security Analysis</h3>
-                  <div className="space-y-2">
-                    {(result.deployment.rule_issues || []).map((issue, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
-                        {issue.safe ? (
-                          <CheckCircle className="h-5 w-5 text-success mt-0.5" />
-                        ) : (
-                          <XCircle className="h-5 w-5 text-destructive mt-0.5" />
-                        )}
-                        <div>
-                          <div className="font-medium">
-                            {typeof issue.type === 'string' ? issue.type : JSON.stringify(issue.type)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            {typeof issue.description === 'string' ? issue.description : JSON.stringify(issue.description)}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Deploy Result */}
-                {result.deployment.deploy_result && (
-                  <div>
-                    <h3 className="font-semibold mb-3">Deployment Status</h3>
-                    <div className="space-y-3 p-4 rounded-lg bg-success/10 border border-success/20">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-success" />
-                        <span className="font-medium text-success">Contract Deployed Successfully!</span>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div>
-                          <Label className="text-sm font-medium">Transaction Hash</Label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <code className="text-sm bg-muted px-2 py-1 rounded flex-1">
-                              {result.deployment.deploy_result.txHash}
-                            </code>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => window.open(`https://etherscan.io/tx/${result.deployment.deploy_result?.txHash}`, '_blank')}
+                {/* Deployment Results Panel */}
+                <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                    Deployment Results
+                  </h3>
+                  
+                  {result.deployment?.deploy_result ? (
+                    <div className="space-y-3">
+                      <div className="grid gap-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">✅ Contract Address:</span>
+                          <div className="flex items-center gap-2">
+                            <a 
+                              href={`https://etherscan.io/address/${result.deployment.deploy_result.contractAddress}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
                             >
-                              <ExternalLink className="h-4 w-4" />
-                            </Button>
+                              {result.deployment.deploy_result.contractAddress}
+                            </a>
+                            <CopyButton text={result.deployment.deploy_result.contractAddress} />
                           </div>
                         </div>
-                        
-                        <div>
-                          <Label className="text-sm font-medium">Contract Address</Label>
-                          <div className="flex items-center gap-2 mt-1">
-                            <code className="text-sm bg-muted px-2 py-1 rounded flex-1">
-                              {result.deployment.deploy_result.contractAddress}
-                            </code>
-                            <CopyButton text={result.deployment.deploy_result.contractAddress} />
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">✅ Transaction Hash:</span>
+                          <div className="flex items-center gap-2">
+                            <a 
+                              href={`https://etherscan.io/tx/${result.deployment.deploy_result.txHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
+                            >
+                              {result.deployment.deploy_result.txHash}
+                            </a>
+                            <CopyButton text={result.deployment.deploy_result.txHash} />
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      ⚠️ Contract compiled but not deployed (check security issues below)
+                    </div>
+                  )}
+                </div>
+
+                {result.deployment && (
+                  <>
+                    {/* Solidity Code */}
+                    {result.deployment.solidity_code && (
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-semibold">Generated Solidity Code</h3>
+                          <CopyButton text={typeof result.deployment.solidity_code === 'string' ? result.deployment.solidity_code : JSON.stringify(result.deployment.solidity_code, null, 2)} />
+                        </div>
+                        <div className="rounded-lg overflow-hidden border">
+                          <SyntaxHighlighter
+                            language="solidity"
+                            style={tomorrow}
+                            customStyle={{ margin: 0, fontSize: '14px' }}
+                          >
+                            {typeof result.deployment.solidity_code === 'string' ? result.deployment.solidity_code : JSON.stringify(result.deployment.solidity_code, null, 2)}
+                          </SyntaxHighlighter>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Security Analysis */}
+                    {result.deployment.rule_issues && result.deployment.rule_issues.length > 0 && (
+                      <div>
+                        <h3 className="font-semibold mb-3">Security Analysis</h3>
+                        <div className="space-y-2">
+                          {result.deployment.rule_issues.map((issue, index) => (
+                            <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
+                              {issue.safe ? (
+                                <CheckCircle className="h-5 w-5 text-success mt-0.5" />
+                              ) : (
+                                <XCircle className="h-5 w-5 text-destructive mt-0.5" />
+                              )}
+                              <div>
+                                <div className="font-medium">
+                                  {typeof issue.type === 'string' ? issue.type : JSON.stringify(issue.type)}
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {typeof issue.description === 'string' ? issue.description : JSON.stringify(issue.description)}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Status Message */}
+                    <div className="p-4 rounded-lg bg-muted/50">
+                      <div className="flex items-center gap-2">
+                        <div className="font-semibold">Status:</div>
+                        <span className="text-sm">{result.status}</span>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             )}

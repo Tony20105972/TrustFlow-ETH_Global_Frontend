@@ -36,13 +36,13 @@ export interface DeployCodeResponse {
 export interface ProposalRequest {
   title: string;
   description: string;
-  wallet_address: string;
+  proposer_address: string;
 }
 
 export interface VoteRequest {
   proposal_id: string;
-  vote: "for" | "against";
-  wallet_address: string;
+  vote_type: boolean;
+  voter_address: string;
 }
 
 export interface ZKDetectRequest {
