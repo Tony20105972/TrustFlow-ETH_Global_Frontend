@@ -48,7 +48,7 @@ const ZKDetector = () => {
       
       toast({
         title: "Analysis Complete",
-        description: `Found ${response.data.analysis_result?.issues.length || 0} issue(s)`,
+        description: `Found ${response.data.analysis_result?.issues?.length || 0} issue(s)`,
       });
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
@@ -201,11 +201,11 @@ contract Example {
                   <div>
                     <div className="font-semibold">Analysis Summary</div>
                     <div className="text-sm text-muted-foreground">
-                      {result.analysis_result?.issues.length === 0 ? "No issues found" : `${result.analysis_result?.issues.length || 0} issue(s) detected`}
+                      {(result.analysis_result?.issues?.length || 0) === 0 ? "No issues found" : `${result.analysis_result?.issues?.length || 0} issue(s) detected`}
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {(result.analysis_result?.issues.length || 0) === 0 ? (
+                    {(result.analysis_result?.issues?.length || 0) === 0 ? (
                       <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Secure
@@ -220,7 +220,7 @@ contract Example {
                 </div>
 
                 {/* Issues Table */}
-                {(result.analysis_result?.issues.length || 0) > 0 && (
+                {(result.analysis_result?.issues?.length || 0) > 0 && (
                   <div>
                     <h3 className="font-semibold mb-3">Detected Issues</h3>
                     <div className="rounded-md border">
@@ -234,7 +234,7 @@ contract Example {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {result.analysis_result?.issues.map((issue, index) => (
+                          {result.analysis_result?.issues?.map((issue, index) => (
                             <TableRow key={index}>
                               <TableCell className="font-medium">{issue.type}</TableCell>
                               <TableCell>
