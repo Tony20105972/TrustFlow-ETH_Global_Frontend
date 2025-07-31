@@ -81,6 +81,26 @@ export interface IPFSUploadRequest {
   file_name: string;
 }
 
+export interface LOPAnalyzeRequest {
+  code: string;
+}
+
+export interface LOPAnalyzeResponse {
+  status: string;
+  analysis_result?: {
+    issues: Array<{
+      type: string;
+      line: number;
+      severity: 'low' | 'medium' | 'high';
+      description: string;
+    }>;
+    suggestions: Array<{
+      line: number;
+      suggestion: string;
+    }>;
+  };
+}
+
 export const apiService = {
   deployCode: (data: DeployCodeRequest) => 
     api.post<DeployCodeResponse>('/deploy/code', data),
@@ -123,4 +143,7 @@ export const apiService = {
 
   swap: (data: SwapRequest) => 
     api.post('/oneinch/swap', data),
+
+  lopAnalyze: (data: LOPAnalyzeRequest) => 
+    api.post<LOPAnalyzeResponse>('/lop/analyze', data),
 };

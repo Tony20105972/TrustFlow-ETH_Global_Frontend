@@ -11,6 +11,7 @@ import DAO from "./pages/DAO";
 import ZKDetector from "./pages/ZKDetector";
 import IPFS from "./pages/IPFS";
 import DeFi from "./pages/DeFi";
+import LOP from "./pages/LOP";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/zk" element={<ZKDetector />} />
               <Route path="/ipfs" element={<IPFS />} />
               <Route path="/defi" element={<DeFi />} />
+              <Route path="/lop" element={<LOP />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

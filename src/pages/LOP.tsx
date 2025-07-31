@@ -6,19 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, Shield, AlertTriangle, XCircle, CheckCircle } from "lucide-react";
+import { ChevronDown, Code, AlertTriangle, XCircle, CheckCircle, Lightbulb } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { apiService, ZKDetectRequest, ZKDetectResponse } from "@/utils/api";
+import { apiService, LOPAnalyzeRequest, LOPAnalyzeResponse } from "@/utils/api";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import ErrorAlert from "@/components/ErrorAlert";
 import { useToast } from "@/hooks/use-toast";
 
-const ZKDetector = () => {
+const LOP = () => {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<ZKDetectResponse | null>(null);
+  const [result, setResult] = useState<LOPAnalyzeResponse | null>(null);
   const [showRawResponse, setShowRawResponse] = useState(false);
   const [rawResponse, setRawResponse] = useState("");
   const { toast } = useToast();
@@ -27,7 +27,7 @@ const ZKDetector = () => {
     if (!code.trim()) {
       toast({
         title: "Error",
-        description: "Please enter Solidity code to analyze",
+        description: "Please enter LOP code to analyze",
         variant: "destructive",
       });
       return;
@@ -38,17 +38,20 @@ const ZKDetector = () => {
     setResult(null);
 
     try {
-      const requestData: ZKDetectRequest = {
-        data: { code: code.trim() }
+      const requestData: LOPAnalyzeRequest = {
+        code: code.trim()
       };
 
-      const response = await apiService.zkDetect(requestData);
+      const response = await apiService.lopAnalyze(requestData);
       setResult(response.data);
       setRawResponse(JSON.stringify(response.data, null, 2));
       
+      const issueCount = response.data.analysis_result?.issues.length || 0;
+      const suggestionCount = response.data.analysis_result?.suggestions.length || 0;
+      
       toast({
         title: "Analysis Complete",
-        description: `Found ${response.data.analysis_result?.issues.length || 0} issue(s)`,
+        description: `Found ${issueCount} issue(s) and ${suggestionCount} suggestion(s)`,
       });
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
@@ -82,7 +85,7 @@ const ZKDetector = () => {
       case 'low':
         return <CheckCircle className="h-4 w-4 text-success" />;
       default:
-        return <Shield className="h-4 w-4 text-muted-foreground" />;
+        return <Code className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -99,35 +102,24 @@ const ZKDetector = () => {
     }
   };
 
-  const exampleCode = `pragma solidity ^0.8.0;
-
-contract Example {
-    address public owner;
-    mapping(address => uint256) public balances;
+  const exampleCode = `function transferTokens(address to, uint amount) {
+    // Transfer tokens to recipient
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
     
-    constructor() {
-        owner = msg.sender;
-    }
-    
-    function withdraw() public {
-        uint256 amount = balances[msg.sender];
-        require(amount > 0, "No balance");
-        
-        // Potential reentrancy vulnerability
-        (bool success, ) = msg.sender.call{value: amount}("");
-        require(success, "Transfer failed");
-        balances[msg.sender] = 0;
-    }
+    // Emit transfer event
+    emit Transfer(msg.sender, to, amount);
 }`;
 
   return (
     <div className="container py-8 max-w-6xl">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-4 bg-trustflow-gradient bg-clip-text text-transparent">
-          ZK Security Detector
+          LOP Code Analyzer
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Analyze your Solidity smart contracts for security vulnerabilities and best practice violations.
+          Analyze your Language of Power (LOP) code for potential issues, optimizations, and best practices.
         </p>
       </div>
 
@@ -136,16 +128,16 @@ contract Example {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
+              <Code className="h-5 w-5 text-primary" />
               Code Analysis
             </CardTitle>
             <CardDescription>
-              Paste your Solidity contract code for security analysis
+              Paste your LOP code for comprehensive analysis
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="code">Solidity Code *</Label>
+              <Label htmlFor="code">LOP Code *</Label>
               <Textarea
                 id="code"
                 placeholder={exampleCode}
@@ -179,20 +171,20 @@ contract Example {
         {/* Results Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Security Analysis Results</CardTitle>
+            <CardTitle>Analysis Results</CardTitle>
             <CardDescription>
-              Detected vulnerabilities and security recommendations
+              Code quality issues and optimization suggestions
             </CardDescription>
           </CardHeader>
           <CardContent>
             {!result && !loading && (
               <div className="text-center py-12 text-muted-foreground">
-                <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Analyze code to see security results here</p>
+                <Code className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Analyze code to see results here</p>
               </div>
             )}
 
-            {loading && <LoadingSpinner text="Scanning for vulnerabilities..." />}
+            {loading && <LoadingSpinner text="Analyzing code quality..." />}
 
             {result && (
               <div className="space-y-6">
@@ -201,14 +193,18 @@ contract Example {
                   <div>
                     <div className="font-semibold">Analysis Summary</div>
                     <div className="text-sm text-muted-foreground">
-                      {result.analysis_result?.issues.length === 0 ? "No issues found" : `${result.analysis_result?.issues.length || 0} issue(s) detected`}
+                      {(result.analysis_result?.issues.length || 0) === 0 
+                        ? "No issues found" 
+                        : `${result.analysis_result?.issues.length || 0} issue(s) detected`}
+                      {(result.analysis_result?.suggestions.length || 0) > 0 && 
+                        ` • ${result.analysis_result?.suggestions.length} suggestion(s)`}
                     </div>
                   </div>
                   <div className="flex gap-2">
                     {(result.analysis_result?.issues.length || 0) === 0 ? (
                       <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Secure
+                        Clean Code
                       </Badge>
                     ) : (
                       <Badge variant="outline">
@@ -228,18 +224,18 @@ contract Example {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Type</TableHead>
-                            <TableHead>Location</TableHead>
+                            <TableHead>Line</TableHead>
                             <TableHead>Severity</TableHead>
                             <TableHead>Description</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {result.analysis_result?.issues.map((issue, index) => (
+                          {(result.analysis_result?.issues || []).map((issue, index) => (
                             <TableRow key={index}>
                               <TableCell className="font-medium">{issue.type}</TableCell>
                               <TableCell>
                                 <code className="text-sm bg-muted px-2 py-1 rounded">
-                                  {issue.location}
+                                  Line {issue.line}
                                 </code>
                               </TableCell>
                               <TableCell>
@@ -255,6 +251,31 @@ contract Example {
                           ))}
                         </TableBody>
                       </Table>
+                    </div>
+                  </div>
+                )}
+
+                {/* Suggestions */}
+                {(result.analysis_result?.suggestions.length || 0) > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3 flex items-center gap-2">
+                      <Lightbulb className="h-4 w-4 text-primary" />
+                      Optimization Suggestions
+                    </h3>
+                    <div className="space-y-3">
+                      {(result.analysis_result?.suggestions || []).map((suggestion, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 rounded-lg border bg-primary/5">
+                          <Lightbulb className="h-5 w-5 text-primary mt-0.5" />
+                          <div>
+                            <div className="font-medium text-sm">
+                              Line {suggestion.line}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {suggestion.suggestion}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -297,4 +318,4 @@ contract Example {
   );
 };
 
-export default ZKDetector;
+export default LOP;

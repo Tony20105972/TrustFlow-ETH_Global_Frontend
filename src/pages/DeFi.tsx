@@ -66,7 +66,21 @@ const DeFi = () => {
         description: "Price quote fetched successfully",
       });
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || err.message || "Unknown error occurred";
+      let errorMessage = "Unknown error occurred";
+      
+      // Handle validation errors gracefully
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail.map((e: any) => 
+            typeof e === 'object' ? `${e.loc?.join('.')}: ${e.msg}` : String(e)
+          ).join(', ');
+        } else {
+          errorMessage = String(err.response.data.detail);
+        }
+      } else if (err.message) {
+        errorMessage = String(err.message);
+      }
+      
       setQuoteError(errorMessage);
       setQuoteRawResponse(JSON.stringify(err.response?.data || { error: errorMessage }, null, 2));
     } finally {
@@ -105,7 +119,21 @@ const DeFi = () => {
         description: "Token swap executed successfully",
       });
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || err.message || "Unknown error occurred";
+      let errorMessage = "Unknown error occurred";
+      
+      // Handle validation errors gracefully
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail.map((e: any) => 
+            typeof e === 'object' ? `${e.loc?.join('.')}: ${e.msg}` : String(e)
+          ).join(', ');
+        } else {
+          errorMessage = String(err.response.data.detail);
+        }
+      } else if (err.message) {
+        errorMessage = String(err.message);
+      }
+      
       setSwapError(errorMessage);
       setSwapRawResponse(JSON.stringify(err.response?.data || { error: errorMessage }, null, 2));
     } finally {

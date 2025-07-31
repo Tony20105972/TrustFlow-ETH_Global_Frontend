@@ -74,7 +74,21 @@ const DAO = () => {
         description: "Proposal created successfully",
       });
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || err.message || "Unknown error occurred";
+      let errorMessage = "Unknown error occurred";
+      
+      // Handle validation errors gracefully
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail.map((e: any) => 
+            typeof e === 'object' ? `${e.loc?.join('.')}: ${e.msg}` : String(e)
+          ).join(', ');
+        } else {
+          errorMessage = String(err.response.data.detail);
+        }
+      } else if (err.message) {
+        errorMessage = String(err.message);
+      }
+      
       setProposalError(errorMessage);
       setProposalRawResponse(JSON.stringify(err.response?.data || { error: errorMessage }, null, 2));
     } finally {
@@ -116,7 +130,21 @@ const DAO = () => {
         description: `Vote "${voteChoice}" submitted successfully`,
       });
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || err.message || "Unknown error occurred";
+      let errorMessage = "Unknown error occurred";
+      
+      // Handle validation errors gracefully
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail.map((e: any) => 
+            typeof e === 'object' ? `${e.loc?.join('.')}: ${e.msg}` : String(e)
+          ).join(', ');
+        } else {
+          errorMessage = String(err.response.data.detail);
+        }
+      } else if (err.message) {
+        errorMessage = String(err.message);
+      }
+      
       setVoteError(errorMessage);
       setVoteRawResponse(JSON.stringify(err.response?.data || { error: errorMessage }, null, 2));
     } finally {

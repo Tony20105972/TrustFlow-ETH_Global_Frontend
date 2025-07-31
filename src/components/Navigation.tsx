@@ -14,6 +14,7 @@ const Navigation = () => {
     { path: "/zk", label: "ZK Detector" },
     { path: "/ipfs", label: "IPFS" },
     { path: "/defi", label: "DeFi" },
+    { path: "/lop", label: "LOP Analyzer" },
   ];
 
   return (

@@ -42,9 +42,36 @@ const Deploy = () => {
     setResult(null);
 
     try {
+      // Parse constructor arguments properly
+      let parsedConstructorArgs: any[] = [];
+      if (constructorArgs.trim()) {
+        try {
+          // Try to parse as JSON array first
+          parsedConstructorArgs = JSON.parse(constructorArgs.trim());
+          // If it's not an array, wrap it in an array
+          if (!Array.isArray(parsedConstructorArgs)) {
+            parsedConstructorArgs = [parsedConstructorArgs];
+          }
+        } catch {
+          // If JSON parsing fails, split by comma and clean up
+          parsedConstructorArgs = constructorArgs
+            .split(',')
+            .map(arg => {
+              const trimmed = arg.trim();
+              // Try to parse as number if it looks like a number
+              if (/^\d+$/.test(trimmed)) {
+                return parseInt(trimmed);
+              }
+              // Remove quotes if present
+              return trimmed.replace(/^["']|["']$/g, '');
+            })
+            .filter(arg => arg !== '');
+        }
+      }
+
       const requestData: DeployCodeRequest = {
         solidity_code: solidityCode.trim(),
-        constructor_args: constructorArgs.trim() ? JSON.parse(constructorArgs.trim()) : [],
+        constructor_args: parsedConstructorArgs,
         solc_version: solcVersion,
         gas_price_multiplier: gasPriceMultiplier
       };
@@ -58,7 +85,21 @@ const Deploy = () => {
         description: "Contract deployment initiated successfully",
       });
     } catch (err: any) {
-      const errorMessage = err.response?.data?.detail || err.message || "Unknown error occurred";
+      let errorMessage = "Unknown error occurred";
+      
+      // Handle validation errors gracefully
+      if (err.response?.data?.detail) {
+        if (Array.isArray(err.response.data.detail)) {
+          errorMessage = err.response.data.detail.map((e: any) => 
+            typeof e === 'object' ? `${e.loc?.join('.')}: ${e.msg}` : String(e)
+          ).join(', ');
+        } else {
+          errorMessage = String(err.response.data.detail);
+        }
+      } else if (err.message) {
+        errorMessage = String(err.message);
+      }
+      
       setError(errorMessage);
       setRawResponse(JSON.stringify(err.response?.data || { error: errorMessage }, null, 2));
     } finally {
@@ -188,7 +229,7 @@ const Deploy = () => {
                 <div>
                   <h3 className="font-semibold mb-3">Security Analysis</h3>
                   <div className="space-y-2">
-                    {result.deployment.rule_issues.map((issue, index) => (
+                    {(result.deployment.rule_issues || []).map((issue, index) => (
                       <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
                         {issue.safe ? (
                           <CheckCircle className="h-5 w-5 text-success mt-0.5" />
