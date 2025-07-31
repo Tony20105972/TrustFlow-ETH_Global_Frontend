@@ -16,7 +16,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const Deploy = () => {
   const [prompt, setPrompt] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
+  const [solidityCode, setSolidityCode] = useState("");
+  const [constructorArgs, setConstructorArgs] = useState("");
+  const [solcVersion, setSolcVersion] = useState("0.8.20");
+  const [gasPriceMultiplier, setGasPriceMultiplier] = useState(2.0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState<DeployCodeResponse | null>(null);
@@ -25,10 +28,10 @@ const Deploy = () => {
   const { toast } = useToast();
 
   const handleDeploy = async () => {
-    if (!prompt.trim()) {
+    if (!solidityCode.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a prompt",
+        description: "Please enter Solidity code",
         variant: "destructive",
       });
       return;
@@ -40,8 +43,10 @@ const Deploy = () => {
 
     try {
       const requestData: DeployCodeRequest = {
-        prompt: prompt.trim(),
-        ...(walletAddress.trim() && { wallet_address: walletAddress.trim() })
+        solidity_code: solidityCode.trim(),
+        constructor_args: constructorArgs.trim() ? JSON.parse(constructorArgs.trim()) : [],
+        solc_version: solcVersion,
+        gas_price_multiplier: gasPriceMultiplier
       };
 
       const response = await apiService.deployCode(requestData);
@@ -50,7 +55,7 @@ const Deploy = () => {
       
       toast({
         title: "Success!",
-        description: "Contract deployed successfully",
+        description: "Contract deployment initiated successfully",
       });
     } catch (err: any) {
       const errorMessage = err.response?.data?.detail || err.message || "Unknown error occurred";
@@ -65,11 +70,11 @@ const Deploy = () => {
     <div className="container py-8 max-w-6xl">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold mb-4 bg-trustflow-gradient bg-clip-text text-transparent">
-          AI Smart Contract Deploy
+          Smart Contract Deploy
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Generate and deploy Solidity smart contracts using AI-powered prompts. 
-          Get instant security analysis and deployment results.
+          Deploy Solidity smart contracts with advanced configuration options. 
+          Get security analysis and deployment results.
         </p>
       </div>
 
@@ -87,23 +92,46 @@ const Deploy = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="prompt">AI Prompt *</Label>
+              <Label htmlFor="solidity-code">Solidity Code *</Label>
               <Textarea
-                id="prompt"
-                placeholder="Create a simple ERC20 token contract with a total supply of 1 million tokens, named 'MyToken' with symbol 'MTK'..."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                className="min-h-[120px]"
+                id="solidity-code"
+                placeholder="pragma solidity ^0.8.20;&#10;&#10;contract MyContract {&#10;    // Your contract code here&#10;}"
+                value={solidityCode}
+                onChange={(e) => setSolidityCode(e.target.value)}
+                className="min-h-[200px] font-mono text-sm"
               />
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="solc-version">Solc Version</Label>
+                <Input
+                  id="solc-version"
+                  placeholder="0.8.20"
+                  value={solcVersion}
+                  onChange={(e) => setSolcVersion(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gas-multiplier">Gas Price Multiplier</Label>
+                <Input
+                  id="gas-multiplier"
+                  type="number"
+                  step="0.1"
+                  placeholder="2.0"
+                  value={gasPriceMultiplier}
+                  onChange={(e) => setGasPriceMultiplier(parseFloat(e.target.value) || 2.0)}
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="wallet">Wallet Address (Optional)</Label>
+              <Label htmlFor="constructor-args">Constructor Arguments (JSON array, optional)</Label>
               <Input
-                id="wallet"
-                placeholder="0x742d35Cc6641C4532B4f21bbCD8f8f02..."
-                value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
+                id="constructor-args"
+                placeholder='["arg1", "arg2"]'
+                value={constructorArgs}
+                onChange={(e) => setConstructorArgs(e.target.value)}
               />
             </div>
 
@@ -137,13 +165,13 @@ const Deploy = () => {
 
             {loading && <LoadingSpinner text="Generating contract..." />}
 
-            {result && (
+            {result && result.deployment && (
               <div className="space-y-6">
                 {/* Solidity Code */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold">Generated Solidity Code</h3>
-                    <CopyButton text={typeof result.solidity_code === 'string' ? result.solidity_code : JSON.stringify(result.solidity_code, null, 2)} />
+                    <h3 className="font-semibold">Solidity Code</h3>
+                    <CopyButton text={typeof result.deployment.solidity_code === 'string' ? result.deployment.solidity_code : JSON.stringify(result.deployment.solidity_code, null, 2)} />
                   </div>
                   <div className="rounded-lg overflow-hidden border">
                     <SyntaxHighlighter
@@ -151,7 +179,7 @@ const Deploy = () => {
                       style={tomorrow}
                       customStyle={{ margin: 0, fontSize: '14px' }}
                     >
-                      {typeof result.solidity_code === 'string' ? result.solidity_code : JSON.stringify(result.solidity_code, null, 2)}
+                      {typeof result.deployment.solidity_code === 'string' ? result.deployment.solidity_code : JSON.stringify(result.deployment.solidity_code, null, 2)}
                     </SyntaxHighlighter>
                   </div>
                 </div>
@@ -160,28 +188,28 @@ const Deploy = () => {
                 <div>
                   <h3 className="font-semibold mb-3">Security Analysis</h3>
                   <div className="space-y-2">
-                  {result.rule_issues.map((issue, index) => (
-                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
-                      {issue.safe ? (
-                        <CheckCircle className="h-5 w-5 text-success mt-0.5" />
-                      ) : (
-                        <XCircle className="h-5 w-5 text-destructive mt-0.5" />
-                      )}
-                      <div>
-                        <div className="font-medium">
-                          {typeof issue.type === 'string' ? issue.type : JSON.stringify(issue.type)}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {typeof issue.description === 'string' ? issue.description : JSON.stringify(issue.description)}
+                    {result.deployment.rule_issues.map((issue, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 rounded-lg border">
+                        {issue.safe ? (
+                          <CheckCircle className="h-5 w-5 text-success mt-0.5" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-destructive mt-0.5" />
+                        )}
+                        <div>
+                          <div className="font-medium">
+                            {typeof issue.type === 'string' ? issue.type : JSON.stringify(issue.type)}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {typeof issue.description === 'string' ? issue.description : JSON.stringify(issue.description)}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                   </div>
                 </div>
 
                 {/* Deploy Result */}
-                {result.deploy_result && (
+                {result.deployment.deploy_result && (
                   <div>
                     <h3 className="font-semibold mb-3">Deployment Status</h3>
                     <div className="space-y-3 p-4 rounded-lg bg-success/10 border border-success/20">
@@ -195,12 +223,12 @@ const Deploy = () => {
                           <Label className="text-sm font-medium">Transaction Hash</Label>
                           <div className="flex items-center gap-2 mt-1">
                             <code className="text-sm bg-muted px-2 py-1 rounded flex-1">
-                              {result.deploy_result.txHash}
+                              {result.deployment.deploy_result.txHash}
                             </code>
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => window.open(`https://etherscan.io/tx/${result.deploy_result.txHash}`, '_blank')}
+                              onClick={() => window.open(`https://etherscan.io/tx/${result.deployment.deploy_result?.txHash}`, '_blank')}
                             >
                               <ExternalLink className="h-4 w-4" />
                             </Button>
@@ -211,9 +239,9 @@ const Deploy = () => {
                           <Label className="text-sm font-medium">Contract Address</Label>
                           <div className="flex items-center gap-2 mt-1">
                             <code className="text-sm bg-muted px-2 py-1 rounded flex-1">
-                              {result.deploy_result.contractAddress}
+                              {result.deployment.deploy_result.contractAddress}
                             </code>
-                            <CopyButton text={result.deploy_result.contractAddress} />
+                            <CopyButton text={result.deployment.deploy_result.contractAddress} />
                           </div>
                         </div>
                       </div>

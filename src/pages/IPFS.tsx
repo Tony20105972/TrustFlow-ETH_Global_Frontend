@@ -70,8 +70,8 @@ const IPFS = () => {
 
     try {
       const response = await apiService.uploadToIPFS(selectedFile);
-      setResult(response.data);
-      setRawResponse(JSON.stringify(response.data, null, 2));
+      setResult((response as any).data);
+      setRawResponse(JSON.stringify((response as any).data, null, 2));
       
       toast({
         title: "Success!",

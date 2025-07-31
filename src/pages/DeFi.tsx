@@ -52,8 +52,8 @@ const DeFi = () => {
 
     try {
       const params: QuoteParams = {
-        from_token: fromToken.trim(),
-        to_token: toToken.trim(),
+        src_token: fromToken.trim(),
+        dst_token: toToken.trim(),
         amount: amount.trim()
       };
 
@@ -90,10 +90,10 @@ const DeFi = () => {
 
     try {
       const requestData: SwapRequest = {
-        from_token: fromToken.trim(),
-        to_token: toToken.trim(),
+        src_token: fromToken.trim(),
+        dst_token: toToken.trim(),
         amount: amount.trim(),
-        wallet_address: walletAddress.trim()
+        from_address: walletAddress.trim()
       };
 
       const response = await apiService.swap(requestData);

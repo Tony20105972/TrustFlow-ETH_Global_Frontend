@@ -9,22 +9,28 @@ const api = axios.create({
   },
 });
 
+// Updated interfaces to match FastAPI backend exactly
 export interface DeployCodeRequest {
-  prompt: string;
-  wallet_address?: string;
+  solidity_code: string;
+  constructor_args?: any[];
+  solc_version?: string;
+  gas_price_multiplier?: number;
 }
 
 export interface DeployCodeResponse {
-  solidity_code: string | object;
-  rule_issues: Array<{
-    type: string | object;
-    description: string | object;
-    safe: boolean;
-  }>;
-  deploy_result?: {
-    txHash: string;
-    contractAddress: string;
-  } | null;
+  status: string;
+  deployment?: {
+    solidity_code: string;
+    rule_issues: Array<{
+      type: string;
+      description: string;
+      safe: boolean;
+    }>;
+    deploy_result?: {
+      txHash: string;
+      contractAddress: string;
+    } | null;
+  };
 }
 
 export interface ProposalRequest {
@@ -40,29 +46,39 @@ export interface VoteRequest {
 }
 
 export interface ZKDetectRequest {
-  code: string;
+  data: {
+    code: string;
+  };
 }
 
 export interface ZKDetectResponse {
-  issues: Array<{
-    type: string;
-    location: string;
-    severity: 'low' | 'medium' | 'high';
-    description: string;
-  }>;
+  status: string;
+  analysis_result?: {
+    issues: Array<{
+      type: string;
+      location: string;
+      severity: 'low' | 'medium' | 'high';
+      description: string;
+    }>;
+  };
 }
 
 export interface SwapRequest {
-  from_token: string;
-  to_token: string;
+  src_token: string;
+  dst_token: string;
   amount: string;
-  wallet_address: string;
+  from_address: string;
 }
 
 export interface QuoteParams {
-  from_token: string;
-  to_token: string;
+  src_token: string;
+  dst_token: string;
   amount: string;
+}
+
+export interface IPFSUploadRequest {
+  file_content: string;
+  file_name: string;
 }
 
 export const apiService = {
@@ -70,27 +86,41 @@ export const apiService = {
     api.post<DeployCodeResponse>('/deploy/code', data),
 
   createProposal: (data: ProposalRequest) => 
-    api.post('/dao/proposal', data),
+    api.post('/proposals/create', data),
 
   vote: (data: VoteRequest) => 
-    api.post('/dao/vote', data),
+    api.post('/proposals/vote', data),
+
+  getProposal: (proposalId: string) => 
+    api.get(`/proposals/${proposalId}`),
 
   zkDetect: (data: ZKDetectRequest) => 
-    api.post<ZKDetectResponse>('/zk-detect', data),
+    api.post<ZKDetectResponse>('/zk_oracle/analyze', data),
 
   uploadToIPFS: (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    return api.post('/ipfs', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+    const reader = new FileReader();
+    return new Promise((resolve, reject) => {
+      reader.onload = async () => {
+        try {
+          const base64Content = reader.result as string;
+          const requestData: IPFSUploadRequest = {
+            file_content: base64Content.split(',')[1] || base64Content,
+            file_name: file.name
+          };
+          const response = await api.post('/ipfs/upload', requestData);
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
     });
   },
 
   getQuote: (params: QuoteParams) => 
-    api.get('/1inch/quote', { params }),
+    api.get('/oneinch/quote', { params }),
 
   swap: (data: SwapRequest) => 
-    api.post('/1inch/swap', data),
+    api.post('/oneinch/swap', data),
 };
