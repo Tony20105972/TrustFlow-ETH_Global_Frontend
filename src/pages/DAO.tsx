@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ChevronDown, Vote, Plus, CheckCircle, XCircle } from "lucide-react";
+import { ChevronDown, Vote, Plus, CheckCircle, XCircle, FileText } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { apiService, ProposalRequest, VoteRequest } from "@/utils/api";
@@ -38,6 +38,25 @@ const DAO = () => {
   const [showVoteRaw, setShowVoteRaw] = useState(false);
 
   const { toast } = useToast();
+
+  const loadExampleProposal = () => {
+    setProposalTitle("Community Treasury Funding");
+    setProposalDescription("A proposal to allocate $1,000 of DAI from DAO Treasury for marketing and community growth initiatives.");
+    setProposalWallet("0x742d35Cc6641C4532B4f21bbCD8f8f02E5BF8A8e");
+    
+    // Focus the description textarea
+    setTimeout(() => {
+      const textarea = document.getElementById('proposal-description') as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.focus();
+      }
+    }, 100);
+    
+    toast({
+      title: "Success",
+      description: "Example proposal loaded!",
+    });
+  };
 
   const handleCreateProposal = async () => {
     if (!proposalTitle.trim() || !proposalDescription.trim() || !proposalWallet.trim()) {
@@ -177,7 +196,18 @@ const DAO = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="proposal-title">Title *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="proposal-title">Title *</Label>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadExampleProposal}
+                  className="hover:opacity-80"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Load Sample
+                </Button>
+              </div>
               <Input
                 id="proposal-title"
                 placeholder="Proposal title..."

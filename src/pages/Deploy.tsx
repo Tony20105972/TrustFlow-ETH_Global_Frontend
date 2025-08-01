@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ExternalLink, CheckCircle, XCircle, Rocket } from "lucide-react";
+import { ChevronDown, ExternalLink, CheckCircle, XCircle, Rocket, FileCode } from "lucide-react";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { apiService, DeployCodeRequest, DeployCodeResponse } from "@/utils/api";
@@ -26,6 +26,36 @@ const Deploy = () => {
   const [showRawResponse, setShowRawResponse] = useState(false);
   const [rawResponse, setRawResponse] = useState("");
   const { toast } = useToast();
+
+  const loadExampleCode = () => {
+    const exampleCode = `pragma solidity ^0.8.0;
+
+contract ExampleToken {
+    string public name = "Example Token";
+    string public symbol = "EXT";
+    uint8 public decimals = 18;
+    uint256 public totalSupply = 1000000 * 10 ** uint256(decimals);
+    mapping(address => uint256) public balanceOf;
+
+    constructor() {
+        balanceOf[msg.sender] = totalSupply;
+    }
+}`;
+    setSolidityCode(exampleCode);
+    
+    // Focus the textarea
+    setTimeout(() => {
+      const textarea = document.getElementById('solidity-code') as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.focus();
+      }
+    }, 100);
+    
+    toast({
+      title: "Success",
+      description: "Example contract loaded!",
+    });
+  };
 
   const handleDeploy = async () => {
     if (!solidityCode.trim()) {
@@ -144,9 +174,20 @@ const Deploy = () => {
         {/* Input Section */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Rocket className="h-5 w-5 text-primary" />
-              Deploy Contract
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Rocket className="h-5 w-5 text-primary" />
+                Deploy Contract
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadExampleCode}
+                className="hover:opacity-80"
+              >
+                <FileCode className="h-4 w-4 mr-2" />
+                Load Sample
+              </Button>
             </CardTitle>
             <CardDescription>
               Describe your smart contract requirements in natural language
