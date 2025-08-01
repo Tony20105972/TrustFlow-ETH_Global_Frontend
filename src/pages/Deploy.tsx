@@ -80,19 +80,26 @@ const Deploy = () => {
       setResult(response.data);
       setRawResponse(JSON.stringify(response.data, null, 2));
 
-      // Check if deployment was successful
-      if (response.data.deployment?.deploy_result) {
+      // ✅ FastAPI response의 status 값을 기준으로 성공/실패 판정
+      if (response.data.status === "success") {
+        // ✅ contractAddress와 txHash가 없을 경우를 대비한 fallback 처리
+        const contractAddress = response.data.deployment?.deploy_result?.contract_address || "Unknown Address";
+        const txHash = response.data.deployment?.deploy_result?.tx_hash || "Unknown Tx";
+
         toast({
           title: "🎉 Deployment Successful",
-          description: `Contract deployed at ${response.data.deployment.deploy_result.contract_address}`,
+          description: `Contract deployed at ${contractAddress}`,
         });
+
       } else {
+        // ❌ status가 'success'가 아닐 때만 실패로 처리
         toast({
           title: "❌ Deployment Failed",
           description: "Smart contract deployment failed. Please check logs or backend.",
           variant: "destructive",
         });
       }
+
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
 
@@ -229,35 +236,35 @@ const Deploy = () => {
                     Deployment Results
                   </h3>
 
-                  {result.deployment?.deploy_result ? (
+                  {result.status === "success" ? (
                     <div className="space-y-3">
                       <div className="grid gap-2">
                         <div className="flex justify-between items-center">
                            <span className="text-sm font-medium">✅ Contract Address:</span>
                            <div className="flex items-center gap-2">
                              <a
-                               href={`https://etherscan.io/address/${result.deployment.deploy_result.contract_address}`}
+                               href={result.deployment?.deploy_result?.contract_address ? `https://etherscan.io/address/${result.deployment.deploy_result.contract_address}` : '#'}
                                target="_blank"
                                rel="noopener noreferrer"
                                className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
                              >
-                               {result.deployment.deploy_result.contract_address}
+                               {result.deployment?.deploy_result?.contract_address || "Unknown Address"}
                              </a>
-                             <CopyButton text={result.deployment.deploy_result.contract_address} />
+                             <CopyButton text={result.deployment?.deploy_result?.contract_address || "Unknown Address"} />
                            </div>
                          </div>
                          <div className="flex justify-between items-center">
                             <span className="text-sm font-medium">✅ Transaction Hash:</span>
                             <div className="flex items-center gap-2">
                               <a
-                                href={`https://etherscan.io/tx/${result.deployment.deploy_result.tx_hash}`}
+                                href={result.deployment?.deploy_result?.tx_hash ? `https://etherscan.io/tx/${result.deployment.deploy_result.tx_hash}` : '#'}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
                               >
-                                {result.deployment.deploy_result.tx_hash}
+                                {result.deployment?.deploy_result?.tx_hash || "Unknown Tx"}
                               </a>
-                              <CopyButton text={result.deployment.deploy_result.tx_hash} />
+                              <CopyButton text={result.deployment?.deploy_result?.tx_hash || "Unknown Tx"} />
                             </div>
                           </div>
                       </div>
