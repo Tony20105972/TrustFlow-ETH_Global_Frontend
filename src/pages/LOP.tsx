@@ -46,8 +46,8 @@ const LOP = () => {
       setResult(response.data);
       setRawResponse(JSON.stringify(response.data, null, 2));
       
-      const issueCount = response.data.analysis_result?.issues.length || 0;
-      const suggestionCount = response.data.analysis_result?.suggestions.length || 0;
+      const issueCount = response.data.analysis_result?.issues?.length || 0;
+      const suggestionCount = response.data.analysis_result?.suggestions?.length || 0;
       
       toast({
         title: "Analysis Complete",
@@ -193,15 +193,15 @@ const LOP = () => {
                   <div>
                     <div className="font-semibold">Analysis Summary</div>
                     <div className="text-sm text-muted-foreground">
-                      {(result.analysis_result?.issues.length || 0) === 0 
+                      {(result.analysis_result?.issues?.length || 0) === 0 
                         ? "No issues found" 
-                        : `${result.analysis_result?.issues.length || 0} issue(s) detected`}
-                      {(result.analysis_result?.suggestions.length || 0) > 0 && 
-                        ` • ${result.analysis_result?.suggestions.length} suggestion(s)`}
+                        : `${result.analysis_result?.issues?.length || 0} issue(s) detected`}
+                      {(result.analysis_result?.suggestions?.length || 0) > 0 && 
+                        ` • ${result.analysis_result?.suggestions?.length} suggestion(s)`}
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {(result.analysis_result?.issues.length || 0) === 0 ? (
+                    {(result.analysis_result?.issues?.length || 0) === 0 ? (
                       <Badge variant="secondary" className="bg-success/10 text-success border-success/20">
                         <CheckCircle className="h-3 w-3 mr-1" />
                         Clean Code
@@ -216,7 +216,7 @@ const LOP = () => {
                 </div>
 
                 {/* Issues Table */}
-                {(result.analysis_result?.issues.length || 0) > 0 && (
+                {(result.analysis_result?.issues?.length || 0) > 0 && (
                   <div>
                     <h3 className="font-semibold mb-3">Detected Issues</h3>
                     <div className="rounded-md border">
@@ -256,7 +256,7 @@ const LOP = () => {
                 )}
 
                 {/* Suggestions */}
-                {(result.analysis_result?.suggestions.length || 0) > 0 && (
+                {(result.analysis_result?.suggestions?.length || 0) > 0 && (
                   <div>
                     <h3 className="font-semibold mb-3 flex items-center gap-2">
                       <Lightbulb className="h-4 w-4 text-primary" />
