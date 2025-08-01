@@ -59,7 +59,7 @@ const DAO = () => {
   };
 
   const loadExampleVote = () => {
-    setVoteProposalId("PROP-2024-001");
+    setVoteProposalId("1");
     setVoteChoice("for");
     setVoteWallet("0x742d35Cc6641C4532B4f21bbCD8f8f02E5BF8A8e");
     
