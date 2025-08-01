@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
 
-## Project info
 
-**URL**: https://lovable.dev/projects/de976e20-dfcb-473b-9100-fe7813df5b5f
+---
 
-## How can I edit this code?
+### ✅ **TrustFlow\_Frontend\_ETH-Global – README.md V1**
 
-There are several ways of editing your application.
+````markdown
+# 🌌 TrustFlow Frontend
 
-**Use Lovable**
+🚀 **TrustFlow** is an **AI-augmented Layer2 DeFi infra** for building, verifying, and enforcing smart contracts **on-chain**.  
+This repo contains the **frontend** for TrustFlow — built for **ETHGlobal Unite DeFi 2025**.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/de976e20-dfcb-473b-9100-fe7813df5b5f) and start prompting.
+👉 **Live Demo:** [trustflow-eth-global-frontend.lovable.app](https://trustflow-eth-global-frontend.lovable.app)
 
-Changes made via Lovable will be committed automatically to this repo.
+---
 
-**Use your preferred IDE**
+## ✨ Features
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+✅ **AI-Powered Smart Contract Builder UI**  
+– Generate and visualize contracts directly from natural language prompts.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+✅ **DAO Governance Panel**  
+– Create proposals, vote, and track results visually.
 
-Follow these steps:
+✅ **ZK Detector Dashboard**  
+– Detect zero-knowledge conditions and verify rules live.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+✅ **NFT/IPFS Report Viewer**  
+– Access and visualize on-chain audit logs.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+✅ **LOP Analyzer**  
+– Analyze 1inch Limit Order Protocol transactions with a dedicated UI.
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🛠 Tech Stack
+
+- ⚡ **Vite** – Lightning-fast frontend build tool  
+- ⚛️ **React + TypeScript** – Component-based architecture  
+- 🎨 **TailwindCSS + shadcn/ui** – Modern, dark-mode friendly UI  
+- 🌐 **Supabase** – Cloud DB for state/config storage  
+- ❤️ **Lovable** – Rapid design-to-deploy platform
+
+---
+
+## 🚀 How to Run Locally
+
+```bash
+# 1️⃣ Clone the repo
+git clone https://github.com/Tony20105972/TrustFlow_Frontend_ETH-Global.git
+cd TrustFlow_Frontend_ETH-Global
+
+# 2️⃣ Install dependencies
+npm install
+
+# 3️⃣ Run dev server
 npm run dev
+````
+
+➡️ Then open **[http://localhost:5173/](http://localhost:5173/)** to view the app.
+
+---
+
+## 📂 Repo Structure
+
+```
+src/
+ ┣ components/        # UI components (buttons, inputs, modals)
+ ┣ pages/             # Main pages (Deploy, DAO, ZK Detector, etc.)
+ ┣ assets/            # Static assets
+ ┗ App.tsx            # Main entry point
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📡 Deployment
 
-**Use GitHub Codespaces**
+✅ Hosted via **Lovable** → [trustflow-eth-global-frontend.lovable.app](https://trustflow-eth-global-frontend.lovable.app)
+✅ Ready for **ETHGlobal live demo**.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 📜 About TrustFlow
 
-This project is built with:
+**TrustFlow** is more than a UI — it’s a **Layer2 trust layer for DeFi**:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+* AI helps **build and audit** contracts,
+* Blockchain **executes and verifies**,
+* DAO & NFT handle **disputes and audit logs**.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/de976e20-dfcb-473b-9100-fe7813df5b5f) and click on Share -> Publish.
+### 🏆 Built for **ETHGlobal Unite DeFi 2025**
 
-## Can I connect a custom domain to my Lovable project?
+By [@Tony20105972](https://github.com/Tony20105972) – **Solo Builder (17 y/o)**
 
-Yes, you can!
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+---
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+\
