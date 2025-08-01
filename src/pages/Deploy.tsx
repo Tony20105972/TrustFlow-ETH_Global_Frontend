@@ -84,7 +84,7 @@ const Deploy = () => {
       if (response.data.deployment?.deploy_result) {
         toast({
           title: "🎉 Deployment Successful",
-          description: `Contract deployed at ${response.data.deployment.deploy_result.contractAddress}`,
+          description: `Contract deployed at ${response.data.deployment.deploy_result.contract_address}`,
         });
       } else {
         toast({
@@ -226,34 +226,34 @@ const Deploy = () => {
                   {result.deployment?.deploy_result ? (
                     <div className="space-y-3">
                       <div className="grid gap-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">✅ Contract Address:</span>
-                          <div className="flex items-center gap-2">
-                            <a 
-                              href={`https://etherscan.io/address/${result.deployment.deploy_result.contractAddress}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
-                            >
-                              {result.deployment.deploy_result.contractAddress}
-                            </a>
-                            <CopyButton text={result.deployment.deploy_result.contractAddress} />
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium">✅ Transaction Hash:</span>
-                          <div className="flex items-center gap-2">
-                            <a 
-                              href={`https://etherscan.io/tx/${result.deployment.deploy_result.txHash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
-                            >
-                              {result.deployment.deploy_result.txHash}
-                            </a>
-                            <CopyButton text={result.deployment.deploy_result.txHash} />
-                          </div>
-                        </div>
+                          <div className="flex justify-between items-center">
+                           <span className="text-sm font-medium">✅ Contract Address:</span>
+                           <div className="flex items-center gap-2">
+                             <a 
+                               href={`https://etherscan.io/address/${result.deployment.deploy_result.contract_address}`}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
+                             >
+                               {result.deployment.deploy_result.contract_address}
+                             </a>
+                             <CopyButton text={result.deployment.deploy_result.contract_address} />
+                           </div>
+                         </div>
+                         <div className="flex justify-between items-center">
+                           <span className="text-sm font-medium">✅ Transaction Hash:</span>
+                           <div className="flex items-center gap-2">
+                             <a 
+                               href={`https://etherscan.io/tx/${result.deployment.deploy_result.tx_hash}`}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
+                             >
+                               {result.deployment.deploy_result.tx_hash}
+                             </a>
+                             <CopyButton text={result.deployment.deploy_result.tx_hash} />
+                           </div>
+                         </div>
                       </div>
                     </div>
                   ) : (

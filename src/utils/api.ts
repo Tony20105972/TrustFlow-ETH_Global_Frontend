@@ -27,8 +27,8 @@ export interface DeployCodeResponse {
       safe: boolean;
     }>;
     deploy_result?: {
-      txHash: string;
-      contractAddress: string;
+      tx_hash: string;
+      contract_address: string;
     } | null;
   };
 }
