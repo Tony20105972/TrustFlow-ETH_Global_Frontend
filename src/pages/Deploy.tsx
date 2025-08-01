@@ -79,7 +79,7 @@ const Deploy = () => {
       const response = await apiService.deployCode(requestData);
       setResult(response.data);
       setRawResponse(JSON.stringify(response.data, null, 2));
-      
+
       // Check if deployment was successful
       if (response.data.deployment?.deploy_result) {
         toast({
@@ -88,17 +88,18 @@ const Deploy = () => {
         });
       } else {
         toast({
-          title: "⚠️ Deployment Compiled",
-          description: "Contract compiled but not deployed (check for security issues)",
+          title: "❌ Deployment Failed",
+          description: "Smart contract deployment failed. Please check logs or backend.",
+          variant: "destructive",
         });
       }
     } catch (err: any) {
       let errorMessage = "Unknown error occurred";
-      
+
       // Handle validation errors gracefully
       if (err.response?.data?.detail) {
         if (Array.isArray(err.response.data.detail)) {
-          errorMessage = err.response.data.detail.map((e: any) => 
+          errorMessage = err.response.data.detail.map((e: any) =>
             typeof e === 'object' ? `${e.loc?.join('.')}: ${e.msg}` : String(e)
           ).join(', ');
         } else {
@@ -107,9 +108,14 @@ const Deploy = () => {
       } else if (err.message) {
         errorMessage = String(err.message);
       }
-      
+
       setError(errorMessage);
       setRawResponse(JSON.stringify(err.response?.data || { error: errorMessage }, null, 2));
+      toast({
+        title: "❌ API Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -122,7 +128,7 @@ const Deploy = () => {
           Smart Contract Deploy
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Deploy Solidity smart contracts with advanced configuration options. 
+          Deploy Solidity smart contracts with advanced configuration options.
           Get security analysis and deployment results.
         </p>
       </div>
@@ -144,7 +150,7 @@ const Deploy = () => {
               <Label htmlFor="solidity-code">Solidity Code *</Label>
               <Textarea
                 id="solidity-code"
-                placeholder="pragma solidity ^0.8.20;&#10;&#10;contract MyContract {&#10;    // Your contract code here&#10;}"
+                placeholder="pragma solidity ^0.8.20;&#10;&#10;contract MyContract {&#10;    // Your contract code here&#10;}"
                 value={solidityCode}
                 onChange={(e) => setSolidityCode(e.target.value)}
                 className="min-h-[200px] font-mono text-sm"
@@ -184,8 +190,8 @@ const Deploy = () => {
               />
             </div>
 
-            <Button 
-              onClick={handleDeploy} 
+            <Button
+              onClick={handleDeploy}
               disabled={loading}
               className="w-full bg-trustflow-gradient hover:opacity-90"
             >
@@ -222,14 +228,14 @@ const Deploy = () => {
                     <CheckCircle className="h-4 w-4 text-primary" />
                     Deployment Results
                   </h3>
-                  
+
                   {result.deployment?.deploy_result ? (
                     <div className="space-y-3">
                       <div className="grid gap-2">
-                          <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center">
                            <span className="text-sm font-medium">✅ Contract Address:</span>
                            <div className="flex items-center gap-2">
-                             <a 
+                             <a
                                href={`https://etherscan.io/address/${result.deployment.deploy_result.contract_address}`}
                                target="_blank"
                                rel="noopener noreferrer"
@@ -241,24 +247,30 @@ const Deploy = () => {
                            </div>
                          </div>
                          <div className="flex justify-between items-center">
-                           <span className="text-sm font-medium">✅ Transaction Hash:</span>
-                           <div className="flex items-center gap-2">
-                             <a 
-                               href={`https://etherscan.io/tx/${result.deployment.deploy_result.tx_hash}`}
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
-                             >
-                               {result.deployment.deploy_result.tx_hash}
-                             </a>
-                             <CopyButton text={result.deployment.deploy_result.tx_hash} />
-                           </div>
-                         </div>
+                            <span className="text-sm font-medium">✅ Transaction Hash:</span>
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={`https://etherscan.io/tx/${result.deployment.deploy_result.tx_hash}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm bg-muted px-2 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer"
+                              >
+                                {result.deployment.deploy_result.tx_hash}
+                              </a>
+                              <CopyButton text={result.deployment.deploy_result.tx_hash} />
+                            </div>
+                          </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="text-sm text-muted-foreground">
-                      ⚠️ Contract compiled but not deployed (check security issues below)
+                    <div className="p-4 rounded-lg bg-red-100/50 border border-red-300 text-red-700">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="h-5 w-5" />
+                        <div className="font-semibold">Contract deployment failed.</div>
+                      </div>
+                      <p className="text-sm mt-2">
+                        Please check the generated Solidity code and security analysis below for potential issues.
+                      </p>
                     </div>
                   )}
                 </div>
