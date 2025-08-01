@@ -58,6 +58,25 @@ const DAO = () => {
     });
   };
 
+  const loadExampleVote = () => {
+    setVoteProposalId("PROP-2024-001");
+    setVoteChoice("for");
+    setVoteWallet("0x742d35Cc6641C4532B4f21bbCD8f8f02E5BF8A8e");
+    
+    // Focus the proposal ID input
+    setTimeout(() => {
+      const input = document.getElementById('vote-proposal-id') as HTMLInputElement;
+      if (input) {
+        input.focus();
+      }
+    }, 100);
+    
+    toast({
+      title: "Success",
+      description: "Example vote loaded!",
+    });
+  };
+
   const handleCreateProposal = async () => {
     if (!proposalTitle.trim() || !proposalDescription.trim() || !proposalWallet.trim()) {
       toast({
@@ -272,7 +291,18 @@ const DAO = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="vote-proposal-id">Proposal ID *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="vote-proposal-id">Proposal ID *</Label>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadExampleVote}
+                  className="hover:opacity-80"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Load Sample
+                </Button>
+              </div>
               <Input
                 id="vote-proposal-id"
                 placeholder="Enter proposal ID..."
