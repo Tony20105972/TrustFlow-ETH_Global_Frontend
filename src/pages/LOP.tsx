@@ -119,7 +119,7 @@ const LOP = () => {
           LOP Code Analyzer
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Analyze your Language of Power (LOP) code for potential issues, optimizations, and best practices.
+          Analyze your Limit Order Protocol (LOP) code for potential issues, optimizations, and best practices.
         </p>
       </div>
 
