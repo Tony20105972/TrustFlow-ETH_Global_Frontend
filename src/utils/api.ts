@@ -46,9 +46,7 @@ export interface VoteRequest {
 }
 
 export interface ZKDetectRequest {
-  data: {
-    code: string;
-  };
+  code: string;
 }
 
 export interface ZKDetectResponse {

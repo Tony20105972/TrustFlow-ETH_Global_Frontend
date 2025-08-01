@@ -39,7 +39,7 @@ const ZKDetector = () => {
 
     try {
       const requestData: ZKDetectRequest = {
-        data: { code: code.trim() }
+        code: code.trim()
       };
 
       const response = await apiService.zkDetect(requestData);
@@ -161,7 +161,7 @@ contract Example {
                 disabled={loading}
                 className="flex-1 bg-trustflow-gradient hover:opacity-90"
               >
-                {loading ? <LoadingSpinner text="Analyzing..." /> : "Analyze Code"}
+                {loading ? "Analyzing..." : "Analyze Code"}
               </Button>
               <Button 
                 variant="outline" 
