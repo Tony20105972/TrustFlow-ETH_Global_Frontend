@@ -189,7 +189,7 @@ const Deploy = () => {
               disabled={loading}
               className="w-full bg-trustflow-gradient hover:opacity-90"
             >
-              {loading ? <LoadingSpinner text="Deploying..." /> : "Deploy Contract"}
+              {loading ? <LoadingSpinner text="🚀 Deploying..." /> : "🚀 Deploy Contract"}
             </Button>
 
             {error && <ErrorAlert message={error} />}

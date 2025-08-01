@@ -69,13 +69,14 @@ const IPFS = () => {
     setResult(null);
 
     try {
-      // Use FormData for file upload
+      // Use FormData for file upload (no Content-Type header needed - automatic)
       const formData = new FormData();
       formData.append("file", selectedFile);
 
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://trust-flow-backend-ethglobal.onrender.com'}/ipfs/upload`, {
         method: "POST",
         body: formData,
+        // Note: No Content-Type header needed - browser sets it automatically for FormData
       });
 
       if (!response.ok) {

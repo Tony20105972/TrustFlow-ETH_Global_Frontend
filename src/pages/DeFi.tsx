@@ -110,9 +110,21 @@ const DeFi = () => {
         from_address: walletAddress.trim()
       };
 
-      const response = await apiService.swap(requestData);
-      setSwapResult(response.data);
-      setSwapRawResponse(JSON.stringify(response.data, null, 2));
+      // Temporary: Use GET with query params instead of POST
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'https://trust-flow-backend-ethglobal.onrender.com'}/oneinch/swap?src_token=${encodeURIComponent(fromToken.trim())}&dst_token=${encodeURIComponent(toToken.trim())}&amount=${encodeURIComponent(amount.trim())}&from_address=${encodeURIComponent(walletAddress.trim())}`, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setSwapResult(data);
+      setSwapRawResponse(JSON.stringify(data, null, 2));
       
       toast({
         title: "🔄 Swap Successful!",
@@ -235,12 +247,12 @@ const DeFi = () => {
               >
                 {swapLoading ? (
                   <LoadingSpinner text="Swapping..." />
-                ) : (
-                  <>
-                    <ArrowRightLeft className="mr-2 h-4 w-4" />
-                    Swap
-                  </>
-                )}
+                 ) : (
+                   <>
+                     <ArrowRightLeft className="mr-2 h-4 w-4" />
+                     ⏳ Swap
+                   </>
+                 )}
               </Button>
             </div>
 
@@ -327,7 +339,7 @@ const DeFi = () => {
                     Swap Execution
                   </h3>
                   
-                  {swapLoading && <LoadingSpinner text="🔄 Swapping..." />}
+                  {swapLoading && <LoadingSpinner text="⏳ Swapping..." />}
                   
                   {swapResult && (
                     <div className="p-4 rounded-lg bg-success/10 border border-success/20">
