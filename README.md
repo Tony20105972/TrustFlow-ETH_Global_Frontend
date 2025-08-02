@@ -1,3 +1,56 @@
+# TrustFlow – ETHGlobal Unite DeFi 2025 Project  
+
+🚀 **This project was built from scratch during ETHGlobal Unite DeFi (July 29 – Aug 4, 2025).**  
+All commits, code, and features were created specifically for this hackathon.
+
+---
+
+## 📆 Development Timeline (Hackathon Week)
+
+✅ **July 29 – Project Kickoff**
+- Created base repo for TrustFlow Frontend & Backend  
+- Set up initial FastAPI server + React frontend boilerplate  
+
+✅ **July 30 – Smart Contract Builder MVP**
+- Implemented AI-powered Smart Contract Builder (natural language → Solidity)  
+- Connected backend → frontend demo flow  
+
+✅ **July 31 – DAO Module**
+- Added DAO voting UI & backend logic  
+- Enabled DAO “pre-approval” step for contract flow  
+
+✅ **Aug 1 – NFT Audit Log + IPFS**
+- Built NFT-based execution log system  
+- Integrated IPFS for immutable audit storage  
+
+✅ **Aug 2 – ZK/Oracle + 1inch LOP**
+- Implemented ZK/Oracle condition detector  
+- Started 1inch Limit Order Protocol integration for DeFi swaps  
+
+✅ **Aug 3 – Final UI Polish & Etherlink Deploy**
+- Linked Etherlink testnet RPC for deployment demo  
+- Finalized frontend pages, cleaned UI & added branding  
+
+✅ **Aug 4 – Submission Ready**
+- Prepared demo video, README.md, and ETHGlobal submission package  
+
+---
+
+## 🎯 Hackathon Commitment
+This repository (and all linked repos) was **developed solely during the ETHGlobal Unite DeFi hackathon window.**  
+- 🟢 No pre-existing code imported  
+- 🟢 All commits were made between **July 29 – Aug 4, 2025**  
+- 🟢 100% open source and verifiable via GitHub commit history
+
+---
+
+## 🔗 Related Repositories
+- **Frontend:** [TrustFlow-ETH_Global_Frontend](https://github.com/Tony20105972/TrustFlow-ETH_Global_Frontend)  
+- **Backend:** [TrustFlow-Backend-ETHGlobal](https://github.com/Tony20105972/TrustFlow_Backend_ETHGlobal)
+
+---
+
+✅ _Built for ETHGlobal Unite DeFi 2025_
 
 
 ---
