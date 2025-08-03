@@ -3,6 +3,8 @@
 🚀 **This project was built from scratch during ETHGlobal Unite DeFi (July 29 – Aug 4, 2025).**  
 All commits, code, and features were created specifically for this hackathon.
 
+I made it Lovable, so there are a lot of big commitments. But this isn't even a boilerplate cord, it's only made during a complete hackathon.
+
 ---
 
 ## 📆 Development Timeline (Hackathon Week)
